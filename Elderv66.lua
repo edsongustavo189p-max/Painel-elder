@@ -1,4 +1,4 @@
--- ⚡ ELDER BONITAO SUPREME V66.9 [I'M KILL STYLE VIBRATION]
+-- ⚡ ELDER BONITAO SUPREME V66.9 [FINAL ELITE EDITION]
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
@@ -19,7 +19,7 @@ local states = {
     hitbox=false, aim_legit=false, aim_rage=false, esp=false, 
     hide_fov=false, tpTool=false, stalker=false, 
     bright=false, streamer=false, ghost=false, hide_icon=false,
-    fast_attack=false
+    fast_attack=false, antikb=false
 }
 
 -- FUNÇÃO LIMPEZA ESP
@@ -107,15 +107,16 @@ end
 
 -- BOTOES ABA 1
 createBtn(gamerFrame, "🛡️ Ghost TP (Seguro)", 10, "ghost")
-createBtn(gamerFrame, "📺 Modo Streamer", 60, "streamer")
+createBtn(gamerFrame, "🛡️ Anti-Knockback", 60, "antikb")
 createBtn(gamerFrame, "🏃 Speed Boost Turbo", 110, "speed")
-createBtn(gamerFrame, "☀️ FullBright", 160, "bright")
-createBtn(gamerFrame, "📍 TP Tool", 210, "tpTool")
-createBtn(gamerFrame, "👤 Follow Player (Fixed)", 260, "stalker")
-createBtn(gamerFrame, "👻 Noclip", 310, "noclip")
-createBtn(gamerFrame, "🧲 Bring (300m)", 360, "bring")
-createBtn(gamerFrame, "🪂 Pulo Infinito", 410, "jump")
-createBtn(gamerFrame, "🟦 Hitbox", 460, "hitbox")
+createBtn(gamerFrame, "📺 Modo Streamer", 160, "streamer")
+createBtn(gamerFrame, "☀️ FullBright", 210, "bright")
+createBtn(gamerFrame, "📍 TP Tool", 260, "tpTool")
+createBtn(gamerFrame, "👤 Follow Player", 310, "stalker")
+createBtn(gamerFrame, "👻 Noclip", 360, "noclip")
+createBtn(gamerFrame, "🧲 Bring (300m)", 410, "bring")
+createBtn(gamerFrame, "🪂 Pulo Infinito", 460, "jump")
+createBtn(gamerFrame, "🟦 Hitbox", 510, "hitbox")
 
 -- BOTOES ABA 2
 createBtn(aimFrame, "🎯 Legit Bot", 10, "aim_legit")
@@ -123,7 +124,7 @@ createBtn(aimFrame, "🔥 Rage Bot", 60, "aim_rage")
 createBtn(aimFrame, "🔵 ESP Highlights", 110, "esp")
 createBtn(aimFrame, "🙈 Ocultar FOV", 160, "hide_fov")
 createBtn(aimFrame, "💀 Fast Attack (I'm Kill)", 210, "fast_attack")
-createBtn(aimFrame, "👻 Ocultar Painel (Invisível)", 260, "hide_icon")
+createBtn(aimFrame, "👻 Ocultar Painel", 260, "hide_icon")
 
 local bAimS = Instance.new("TextButton", aimFrame); bAimS.Size = UDim2.new(1,-24,0,42); bAimS.Position = UDim2.new(0,12,0,310); bAimS.Text = "⚡ Mira: "..aim_speed_names[current_speed_idx]; bAimS.BackgroundColor3 = Color3.fromRGB(0, 120, 180); bAimS.TextColor3 = Color3.new(1,1,1); Instance.new("UICorner", bAimS)
 bAimS.MouseButton1Click:Connect(function() current_speed_idx = (current_speed_idx >= 4) and 1 or current_speed_idx + 1; bAimS.Text = "⚡ Mira: "..aim_speed_names[current_speed_idx] end)
@@ -131,27 +132,34 @@ bAimS.MouseButton1Click:Connect(function() current_speed_idx = (current_speed_id
 local bFov = bAimS:Clone(); bFov.Parent = aimFrame; bFov.Position = UDim2.new(0, 12, 0, 360); bFov.Text = "📏 Tamanho FOV: "..FOV_RADIUS; bFov.BackgroundColor3 = Color3.fromRGB(40,40,45)
 bFov.MouseButton1Click:Connect(function() FOV_RADIUS = (FOV_RADIUS >= 400) and 50 or FOV_RADIUS + 50; bFov.Text = "📏 Tamanho FOV: "..FOV_RADIUS end)
 
--- LÓGICA FAST ATTACK + VIBRAÇÃO "I'M KILL"
+-- LÓGICA ANTI-KB
+RunService.Heartbeat:Connect(function()
+    if states.antikb and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        player.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
+        player.Character.HumanoidRootPart.RotVelocity = Vector3.new(0,0,0)
+    end
+end)
+
+-- FAST ATTACK + I'M KILL SHAKE
 RunService.Heartbeat:Connect(function()
     if states.fast_attack and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
         local hrp = player.Character.HumanoidRootPart
-        -- Efeito de travamento agressivo (rotação e posição randômica curta)
         local rotShake = CFrame.Angles(math.rad(math.random(-15,15)), math.rad(math.random(-15,15)), math.rad(math.random(-15,15)))
         local posShake = Vector3.new(math.random(-10,10)/20, math.random(-10,10)/20, math.random(-10,10)/20)
         hrp.CFrame = hrp.CFrame * rotShake + posShake
-        
         local tool = player.Character:FindFirstChildOfClass("Tool")
         if tool then tool:Activate() end
     end
 end)
 
--- RESTANTE DAS FUNÇÕES (NOCLIP, AIMBOT, ETC)
+-- NOCLIP
 RunService.Stepped:Connect(function()
     if states.noclip and player.Character then
         for _, v in pairs(player.Character:GetDescendants()) do if v:IsA("BasePart") then v.CanCollide = false end end
     end
 end)
 
+-- RENDERS (AIMBOT, FOV, BRIGHT)
 RunService.RenderStepped:Connect(function()
     if states.bright then Lighting.Ambient = Color3.new(1, 1, 1); Lighting.ClockTime = 14 end
     fovCircle.Visible = (not states.hide_fov and not states.streamer); fovCircle.Radius = FOV_RADIUS; fovCircle.Position = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
@@ -174,6 +182,7 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
+-- HEARTBEAT (MOVIMENTO)
 RunService.Heartbeat:Connect(function()
     if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then return end
     local hrp = player.Character.HumanoidRootPart
@@ -198,6 +207,7 @@ RunService.Heartbeat:Connect(function()
     end
 end)
 
+-- GHOST TP & TOOLS
 task.spawn(function()
     while true do
         if states.ghost and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
