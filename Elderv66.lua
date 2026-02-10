@@ -186,11 +186,11 @@ end)
 RunService.Heartbeat:Connect(function()
     if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then return end
     local hrp = player.Character.HumanoidRootPart
-    if states.speed and player.Character.Humanoid.MoveDirection.Magnitude > 0 then hrp.CFrame += (player.Character.Humanoid.MoveDirection * 1.4) end
+    if states.speed and player.Character.Humanoid.MoveDirection.Magnitude > 0 then hrp.CFrame += (player.Character.Humanoid.MoveDirection * 2.5) end
     for _, p in pairs(Players:GetPlayers()) do
         if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
             local tP = p.Character.HumanoidRootPart; local dist = (hrp.Position - tP.Position).Magnitude
-            if states.bring and dist <= BRING_LIMIT then tP.CFrame = hrp.CFrame * CFrame.new(0,0,-4) end
+            if states.bring and dist <= BRING_LIMIT then tP.CFrame = hrp.CFrame * CFrame.new(0,0,-2) end
             if states.hitbox then tP.Size = Vector3.new(16,16,16); tP.Transparency = 0.7; tP.CanCollide = false 
             elseif not states.hitbox and tP.Size.X > 2 then tP.Size = Vector3.new(2,2,1); tP.Transparency = 1 end
         end
