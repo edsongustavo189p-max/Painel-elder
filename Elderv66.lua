@@ -19,7 +19,7 @@ local states = {
     hitbox=false, aim_legit=false, aim_rage=false, esp=false, 
     hide_fov=false, tpTool=false, stalker=false, 
     bright=false, streamer=false, ghost=false, hide_icon=false,
-    fast_attack=false, antikb=false
+    fast_attack=false, antikb=false, im_kill_visual=false
 }
 
 -- FUNÇÃO LIMPEZA ESP
@@ -124,13 +124,54 @@ createBtn(aimFrame, "🔥 Rage Bot", 60, "aim_rage")
 createBtn(aimFrame, "🔵 ESP Highlights", 110, "esp")
 createBtn(aimFrame, "🙈 Ocultar FOV", 160, "hide_fov")
 createBtn(aimFrame, "💀 Fast Attack (I'm Kill)", 210, "fast_attack")
-createBtn(aimFrame, "👻 Ocultar Painel", 260, "hide_icon")
+createBtn(aimFrame, "💀 I'm Kill Visual", 260, "im_kill_visual")
+createBtn(aimFrame, "👻 Ocultar Painel", 310, "hide_icon")
 
-local bAimS = Instance.new("TextButton", aimFrame); bAimS.Size = UDim2.new(1,-24,0,42); bAimS.Position = UDim2.new(0,12,0,310); bAimS.Text = "⚡ Mira: "..aim_speed_names[current_speed_idx]; bAimS.BackgroundColor3 = Color3.fromRGB(0, 120, 180); bAimS.TextColor3 = Color3.new(1,1,1); Instance.new("UICorner", bAimS)
+local bAimS = Instance.new("TextButton", aimFrame); bAimS.Size = UDim2.new(1,-24,0,42); bAimS.Position = UDim2.new(0,12,0,360); bAimS.Text = "⚡ Mira: "..aim_speed_names[current_speed_idx]; bAimS.BackgroundColor3 = Color3.fromRGB(0, 120, 180); bAimS.TextColor3 = Color3.new(1,1,1); Instance.new("UICorner", bAimS)
 bAimS.MouseButton1Click:Connect(function() current_speed_idx = (current_speed_idx >= 4) and 1 or current_speed_idx + 1; bAimS.Text = "⚡ Mira: "..aim_speed_names[current_speed_idx] end)
 
-local bFov = bAimS:Clone(); bFov.Parent = aimFrame; bFov.Position = UDim2.new(0, 12, 0, 360); bFov.Text = "📏 Tamanho FOV: "..FOV_RADIUS; bFov.BackgroundColor3 = Color3.fromRGB(40,40,45)
+local bFov = bAimS:Clone(); bFov.Parent = aimFrame; bFov.Position = UDim2.new(0, 12, 0, 410); bFov.Text = "📏 Tamanho FOV: "..FOV_RADIUS; bFov.BackgroundColor3 = Color3.fromRGB(40,40,45)
 bFov.MouseButton1Click:Connect(function() FOV_RADIUS = (FOV_RADIUS >= 400) and 50 or FOV_RADIUS + 50; bFov.Text = "📏 Tamanho FOV: "..FOV_RADIUS end)
+
+-- LÓGICA I'M KILL VISUAL
+RunService.RenderStepped:Connect(function()
+    if states.im_kill_visual then
+        for _, p in pairs(Players:GetPlayers()) do
+            if p ~= player and p.Character and p.Character:FindFirstChild("Head") then
+                local head = p.Character.Head
+                local headPos, onScreen = Camera:WorldToViewportPoint(head.Position)
+                
+                if onScreen then
+                    -- Linha de 10 studs vindo do céu
+                    local skyPos = Camera:WorldToViewportPoint(head.Position + Vector3.new(0, 10, 0))
+                    
+                    local line = Drawing.new("Line")
+                    line.From = Vector2.new(skyPos.X, skyPos.Y)
+                    line.To = Vector2.new(headPos.X, headPos.Y)
+                    line.Color = Color3.new(1, 0, 0)
+                    line.Thickness = 1.5
+                    line.Visible = true
+
+                    -- Bloco de dano 999 animado no topo da linha
+                    local damage = Drawing.new("Text")
+                    damage.Text = "99999999999\n99999999999\n99999999999\n99999999999"
+                    damage.Size = 16
+                    damage.Center = true
+                    damage.Outline = true
+                    damage.Color = Color3.new(1, 0, 0)
+                    -- Animação de tremor no texto
+                    damage.Position = Vector2.new(skyPos.X + math.random(-3, 3), skyPos.Y - 25 + math.random(-3, 3))
+                    damage.Visible = true
+
+                    task.delay(0.03, function()
+                        line:Remove()
+                        damage:Remove()
+                    end)
+                end
+            end
+        end
+    end
+end)
 
 -- LÓGICA ANTI-KB
 RunService.Heartbeat:Connect(function()
